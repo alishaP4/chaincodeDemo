@@ -5,6 +5,10 @@ import(
 	"errors"
 	"encoding/json"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"math"
+	"math/rand"
+	//"code.google.com/p/go.crypto/ripemd160"
+	"crypto/rsa"
 )
 
 const   PREFIX_PATIENT =  "patient"
@@ -41,7 +45,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
  
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if function == "get_patient_details" {
-		return t.get_patient_details(stub, args)		
+            		return t.get_patient_details(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation " + function)
@@ -62,6 +66,31 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
    
 }
  
+func GetPrivateKey() *rsa.PrivateKey{
+	PrivateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil{
+		fmt.Println(err.Error)	
+	}
+	return privateKey
+}
+
+func GetPublicKeyFromPrivateKey(privateKey *rsa.PrivateKey)
+*rsa.PublicKey {
+	publicKey := &privateKey.PublicKey
+	return publicKey
+}
+
+func GetCertAttribute(stub shim.ChaincodeStubInterface, attributeName string) (string, error) {
+    fmt.Println("Entering GetCertAttribute")
+    attr, err := stub.ReadCertAttribute(attributeName)
+    if err != nil {
+        return "", errors.New("Couldn't get attribute " + attributeName + ". Error: " + err.Error())
+    }
+    attrString := string(attr)
+    return attrString, nil
+}
+ 
+
 func main() {
     err := shim.Start(new(SimpleChaincode))
     if err != nil {
