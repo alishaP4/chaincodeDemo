@@ -23,7 +23,7 @@ type Patient struct {
 	dob           		string 			`json:"dob"`
 	CurrentProblem          string 			`json:"currentproblem"`
 	allergies      		string 			`json:"currentproblem"`
-	role    		string			`json:"role"`
+	Role    		string			`json:"role"`
 	Prescriptions 		[]Prescription 	        `json:"prescriptions"`
 	Lab_Details             []Lab_Details           `json:"lab_details"`
 }
@@ -41,19 +41,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
  
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if function == "get_patient_details" {
-		//return t.get_patient_details(stub, args)
-		keysItr,err :=stub.RangeQueryState("","")
-		if err !=nil {
-			return nil,fmt.Errorf("Keys operation failed. Error accessing state: %s",err)
-		}
-		defer keysIter.Close()
-		i := 0
-		for keysIter.HasNext(){
-			i = i + 1
-		}
-		return i,nil
-		
-		
+		return t.get_patient_details(stub, args)		
 	}
 
 	return nil, errors.New("Received unknown function invocation " + function)
@@ -89,7 +77,7 @@ func main() {
 
 func (t *SimpleChaincode) enter_patient_details(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	if len(args) != 4 { 
+	if len(args) != 5 { 
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
 
@@ -99,6 +87,7 @@ func (t *SimpleChaincode) enter_patient_details(stub shim.ChaincodeStubInterface
 	patient.dob = args[1]
 	patient.CurrentProblem = args[2]
 	patient.allergies =  args[3]
+	patient.Role =  args[4]
 	bytes, err := json.Marshal(&patient)
 
 	if err != nil { 
@@ -170,7 +159,7 @@ lab_details := Lab_Details{}
 func (t *SimpleChaincode) enter_patient_prescription(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	//		0		 1		   2		  3
-	//	   Name   Disease  Medication  Duration
+	//	       Name  	      Disease 	      Medication       Duration
 
 	if len(args) != 4 { 
 		return nil, errors.New("Incorrect number of arguments. Expecting 4")
