@@ -23,6 +23,7 @@ type Patient struct {
 	dob           		string 			`json:"dob"`
 	CurrentProblem          string 			`json:"currentproblem"`
 	allergies      		string 			`json:"currentproblem"`
+	role    		string			`json:"role"`
 	Prescriptions 		[]Prescription 	        `json:"prescriptions"`
 	Lab_Details             []Lab_Details           `json:"lab_details"`
 }
